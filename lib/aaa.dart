@@ -43,6 +43,33 @@ class _MyListState extends State<MyList> {
     return widget;
   }
 
+  Widget gridItem(int index) {
+    final Color color = getRandomColor(index);
+    Widget widget = Container(
+      decoration: BoxDecoration(
+          border: Border.all(color: Colors.black),
+          color: getRandomColor(index)),
+      alignment: Alignment.center,
+      child: Text(
+        '$index',
+        style: TextStyle(
+            color:
+                color.computeLuminance() < 0.5 ? Colors.white : Colors.black),
+      ),
+      //height: index == 5 ? 1500.0 : 100.0,
+      height: ((index % 3) + 1) * 100.0,
+    );
+    return widget;
+  }
+
+  List<Widget> gridList() {
+    List<Widget> list = [];
+    for (int i = 0; i < 100; i++) {
+      list.add(gridItem(i));
+    }
+    return list;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,38 +85,15 @@ class _MyListState extends State<MyList> {
                   return listItem(index);
                 }, childCount: 20),
               ),
-              SliverWaterfallFlow(
-                gridDelegate:
-                    SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount,
-                  crossAxisSpacing: crossAxisSpacing,
-                  mainAxisSpacing: mainAxisSpacing,
-                  collectGarbage: (List<int> garbages) {
-                    print('collect garbage : $garbages');
-                  },
-                  viewportBuilder: (int firstIndex, int lastIndex) {
-                    print('viewport : [$firstIndex,$lastIndex]');
-                  },
-                ),
-                delegate:
-                    SliverChildBuilderDelegate((BuildContext c, int index) {
-                  final Color color = getRandomColor(index);
-                  return Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black),
-                        color: getRandomColor(index)),
-                    alignment: Alignment.center,
-                    child: Text(
-                      '$index',
-                      style: TextStyle(
-                          color: color.computeLuminance() < 0.5
-                              ? Colors.white
-                              : Colors.black),
-                    ),
-                    //height: index == 5 ? 1500.0 : 100.0,
-                    height: ((index % 3) + 1) * 100.0,
-                  );
-                }),
+              SliverWaterfallFlow.count(
+                crossAxisCount: crossAxisCount,
+                collectGarbage: (List<int> garbages) {
+                  print('collect garbage : $garbages');
+                },
+                viewportBuilder: (int firstIndex, int lastIndex) {
+                  print('viewport : [$firstIndex,$lastIndex]');
+                },
+                children: gridList(),
               )
             ],
           );
